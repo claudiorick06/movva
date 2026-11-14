@@ -1,0 +1,73 @@
+:root {
+    --bg-main: #f4f6f8;
+    --card-bg: #ffffff;
+    --card-border: #e1e4e8;
+    --text-main: #0d1117;
+    --text-muted: #57606a;
+    --brand-orange: #ff5700;
+    --orange-hover: #d94a00;
+    --input-bg: #f8fafc;
+}
+
+body {
+    background-color: var(--bg-main);
+    color: var(--text-main);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: system-ui, -apple-system, sans-serif;
+}
+
+.login-card {
+    background-color: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 16px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+    width: 100%;
+    max-width: 400px;
+    padding: 2.5rem;
+}
+
+.brand-logo-img {
+    max-width: 160px;
+    height: auto;
+    display: block;
+    margin: 0 auto;
+}
+
+.btn-orange {
+    background-color: var(--brand-orange);
+    color: #ffffff;
+    font-weight: 600;
+    border: none;
+    padding: 0.75rem;
+    border-radius: 8px;
+    transition: background-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.btn-orange:hover {
+    background-color: var(--orange-hover);
+    color: #ffffff;
+    box-shadow: 0 4px 15px rgba(255, 87, 0, 0.25);
+}
+
+.form-control {
+    background-color: var(--input-bg);
+    border: 1px solid var(--card-border);
+    color: var(--text-main);
+    padding: 0.65rem 0.85rem;
+}
+
+.form-control:focus {
+    background-color: #ffffff;
+    border-color: var(--brand-orange);
+    color: var(--text-main);
+    box-shadow: 0 0 0 0.25rem rgba(255, 87, 0, 0.15);
+}
+
+.input-group-text {
+    background-color: var(--input-bg);
+    border-color: var(--card-border);
+    color: var(--text-muted);
+}

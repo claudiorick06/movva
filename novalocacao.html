@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="pt-br" data-bs-theme="light">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Movvi - Nova Locação</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="painelstyle.css">
+
+</head>
+
+<body>
+    <div class="wrapper">
+        <!-- Sidebar -->
+        <nav id="sidebar">
+            <div>
+                <div class="sidebar-header text-center">
+                    <img src="./images/logo.png" alt="Movvi Logo" class="brand-logo-img">
+                </div>
+
+                <ul class="sidebar-menu">
+                    <li class="menu-title">Menu Principal</li>
+
+                    <li>
+                        <a href="#homeSubmenu" data-bs-toggle="collapse" class="nav-link active">
+                            <span class="nav-link-content">
+                                <i class="bi bi-house-door"></i> Home
+                            </span>
+                            <i class="bi bi-chevron-down small"></i>
+                        </a>
+                        <div class="collapse show" id="homeSubmenu">
+                            <ul class="submenu">
+                                <li><a href="novalocacao.html" class="submenu-link active"><i
+                                            class="bi bi-plus-circle me-1"></i> Nova Locação</a></li>
+                                <li><a href="locacoes.html" class="submenu-link"><i class="bi bi-file-text me-1"></i>
+                                        Locações</a></li>
+                                <li><a href="dashboard.html#estatisticas" class="submenu-link"><i
+                                            class="bi bi-graph-up me-1"></i> Estatísticas</a></li>
+                            </ul>
+                        </div>
+                    </li>
+
+                    <li class="mt-2">
+                        <a href="#veiculosSubmenu" data-bs-toggle="collapse" class="nav-link">
+                            <span class="nav-link-content">
+                                <i class="bi bi-car-front"></i> Veículos
+                            </span>
+                            <i class="bi bi-chevron-down small"></i>
+                        </a>
+                        <div class="collapse" id="veiculosSubmenu">
+                            <ul class="submenu">
+                                <li><a href="veiculos.html" class="submenu-link">Frota Completa</a></li>
+                                <li><a href="veiculos.html?status=disponivel" class="submenu-link">Disponíveis</a></li>
+                                <li><a href="veiculos.html?status=manutencao" class="submenu-link">[Em Manutenção]</a>
+                                </li>
+                            </ul>
+                        </div>
+                    </li>
+
+                    <li class="mt-2">
+                        <a href="clientes.html" class="nav-link">
+                            <span class="nav-link-content">
+                                <i class="bi bi-people"></i> Clientes
+                            </span>
+                        </a>
+                    </li>
+
+                    <li class="mt-2">
+                        <a href="atendentes.html" class="nav-link">
+                            <span class="nav-link-content">
+                                <i class="bi bi-person-badge"></i> Colaboradores
+                            </span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="border-top pt-3">
+                <a href="sobre.html" class="nav-link text-secondary">
+                    <span class="nav-link-content">
+                        <i class="bi bi-info-circle"></i> Sobre o sistema
+                    </span>
+                </a>
+                <a href="index.html" class="nav-link text-danger mt-1">
+                    <span class="nav-link-content">
+                        <i class="bi bi-box-arrow-right"></i> Sair
+                    </span>
+                </a>
+            </div>
+        </nav>
+
+        <!-- Conteúdo Principal -->
+        <main id="content">
+            <!-- Titulo da Página -->
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <h3 class="fw-bold mb-1"><i class="bi bi-key-fill me-2"
+                            style="color: var(--brand-orange);"></i>Abertura de Nova Locação</h3>
+                    <p class="text-secondary small mb-0">Informe as chaves de identificação (CPF / ID) para gerar o
+                        contrato.</p>
+                </div>
+                <a href="locacoes.html" class="btn btn-outline-secondary btn-sm" style="border-radius: 8px;">
+                    <i class="bi bi-arrow-left me-1"></i> Voltar para Locações
+                </a>
+            </div>
+
+            <!-- Card de Formulário -->
+            <div class="form-card">
+                <form action="locacao_salvar.php" method="POST">
+
+                    <!-- Secção 1: Identificação (CPF Cliente, ID Veículo, CPF Atendente) -->
+                    <h5 class="fw-bold mb-3 pb-2 border-bottom text-dark">
+                        <i class="bi bi-person-vcard me-2" style="color: var(--brand-orange);"></i>Identificação da
+                        Operação
+                    </h5>
+
+                    <div class="row g-3 mb-4">
+                        <!-- Input de CPF do Cliente -->
+                        <div class="col-md-4">
+                            <label for="cpf_cliente" class="form-label small fw-semibold text-secondary">CPF do Cliente
+                                *</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="bi bi-person"></i></span>
+                                <input type="text" class="form-control" id="cpf_cliente" name="cpf_cliente"
+                                    placeholder="000.000.000-00" required>
+                            </div>
+                        </div>
+
+                        <!-- Input de ID do Veículo -->
+                        <div class="col-md-4">
+                            <label for="veiculo_id" class="form-label small fw-semibold text-secondary">ID do Veículo
+                                *</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="bi bi-car-front"></i></span>
+                                <input type="number" class="form-control" id="veiculo_id" name="veiculo_id"
+                                    placeholder="Ex: 12" min="1" required>
+                            </div>
+                        </div>
+
+                        <!-- Input de CPF do Atendente -->
+                        <div class="col-md-4">
+                            <label for="cpf_atendente" class="form-label small fw-semibold text-secondary">CPF do
+                                Atendente Responsável *</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="bi bi-person-badge"></i></span>
+                                <input type="text" class="form-control" id="cpf_atendente" name="cpf_atendente"
+                                    placeholder="000.000.000-00" required>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Secção 2: Datas e Condições -->
+                    <h5 class="fw-bold mb-3 pb-2 border-bottom text-dark">
+                        <i class="bi bi-calendar-event me-2" style="color: var(--brand-orange);"></i>Período da Locação
+                    </h5>
+
+                    <div class="row g-3 mb-4">
+                        <div class="col-md-6">
+                            <label for="data_retirada" class="form-label small fw-semibold text-secondary">Data e Hora
+                                de Retirada *</label>
+                            <input type="datetime-local" class="form-control" id="data_retirada" name="data_retirada"
+                                required>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label for="data_prevista_devolucao"
+                                class="form-label small fw-semibold text-secondary">Data Prevista de Devolução *</label>
+                            <input type="datetime-local" class="form-control" id="data_prevista_devolucao"
+                                name="data_prevista_devolucao" required>
+                        </div>
+                    </div>
+
+                    <!-- Botões de Ação -->
+                    <div class="d-flex justify-content-end gap-2 pt-3 border-top">
+                        <a href="dashboard.html" class="btn btn-light px-4"
+                            style="border-radius: 10px; border: 1px solid var(--card-border);">Cancelar</a>
+                        <button type="submit" class="btn btn-orange">
+                            <i class="bi bi-check-circle me-1"></i> Registrar Locação
+                        </button>
+                    </div>
+
+                </form>
+            </div>
+        </main>
+    </div>
+
+    <!-- Bootstrap 5 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>

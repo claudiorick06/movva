@@ -1,0 +1,236 @@
+/* =========================================================
+   1. VARIÁVEIS E ESTRUTURA GLOBAL (Comum a todas as telas)
+   ========================================================= */
+:root {
+    --bg-main: #f4f6f8;
+    --card-bg: #ffffff;
+    --card-border: #e1e4e8;
+    --text-main: #0d1117;
+    --text-muted: #57606a;
+    --brand-orange: #ff5700;
+    --orange-hover: #d94a00;
+    --sidebar-width: 260px;
+    --input-bg: #f8fafc;
+}
+
+body {
+    background-color: var(--bg-main);
+    color: var(--text-main);
+    font-family: system-ui, -apple-system, sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+}
+
+.wrapper {
+    display: flex;
+    width: 100%;
+}
+
+/* =========================================================
+   2. SIDEBAR FIXA E NAVEGAÇÃO
+   ========================================================= */
+#sidebar {
+    width: var(--sidebar-width);
+    min-width: var(--sidebar-width);
+    background-color: var(--card-bg);
+    border-right: 1px solid var(--card-border);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 100;
+    padding: 1.5rem 1rem;
+}
+
+.sidebar-header {
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid var(--card-border);
+}
+
+.brand-logo-img {
+    max-width: 140px;
+    height: auto;
+}
+
+.sidebar-menu {
+    margin-top: 1.5rem;
+    list-style: none;
+    padding: 0;
+}
+
+.menu-title {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--text-muted);
+    margin-bottom: 0.5rem;
+    font-weight: 700;
+    padding-left: 0.75rem;
+}
+
+.nav-link {
+    color: var(--text-main);
+    padding: 0.65rem 0.75rem;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 0.95rem;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    text-decoration: none;
+}
+
+.nav-link:hover,
+.nav-link.active {
+    background-color: rgba(255, 87, 0, 0.08);
+    color: var(--brand-orange);
+}
+
+.nav-link.active {
+    font-weight: 600;
+}
+
+.nav-link-content {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.submenu {
+    list-style: none;
+    padding-left: 2rem;
+    margin-top: 0.25rem;
+    margin-bottom: 0.5rem;
+}
+
+.submenu-link {
+    color: var(--text-muted);
+    font-size: 0.875rem;
+    text-decoration: none;
+    padding: 0.35rem 0;
+    display: block;
+    transition: color 0.2s ease;
+}
+
+.submenu-link:hover,
+.submenu-link.active {
+    color: var(--brand-orange);
+    font-weight: 600;
+}
+
+/* =========================================================
+   3. ÁREA DE CONTEÚDO, TABELAS, FORMULÁRIOS E BOTÕES
+   ========================================================= */
+#content {
+    margin-left: var(--sidebar-width);
+    width: calc(100% - var(--sidebar-width));
+    padding: 2rem;
+}
+
+.table-card {
+    background-color: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 16px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
+    overflow: hidden;
+}
+
+.form-control,
+.form-select {
+    background-color: var(--input-bg);
+    border: 1px solid var(--card-border);
+    color: var(--text-main);
+    padding: 0.65rem 0.85rem;
+    border-radius: 10px;
+}
+
+.form-control:focus,
+.form-select:focus {
+    background-color: #ffffff;
+    border-color: var(--brand-orange);
+    color: var(--text-main);
+    box-shadow: 0 0 0 0.25rem rgba(255, 87, 0, 0.15);
+}
+
+.input-group-text {
+    background-color: var(--input-bg);
+    border-color: var(--card-border);
+    color: var(--text-muted);
+    border-radius: 10px 0 0 10px;
+}
+
+.btn-orange {
+    background-color: var(--brand-orange);
+    color: #ffffff;
+    font-weight: 600;
+    border: none;
+    border-radius: 10px;
+    padding: 0.6rem 1.2rem;
+    transition: background-color 0.2s ease;
+}
+
+.btn-orange:hover {
+    background-color: var(--orange-hover);
+    color: #ffffff;
+}
+
+.modal-content {
+    border-radius: 20px;
+    border: 1px solid var(--card-border);
+}
+
+/* =========================================================
+   4. ESPECÍFICOS: DASHBOARD (dashboard.html)
+   ========================================================= */
+.welcome-card {
+    background-color: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 20px;
+    padding: 2.5rem 2rem 1.5rem 2rem;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
+    margin-bottom: 2rem;
+    min-height: 220px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.stat-card {
+    background-color: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 16px;
+    padding: 1.25rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.02);
+    transition: transform 0.2s ease;
+}
+
+.stat-card:hover {
+    transform: translateY(-2px);
+}
+
+.stat-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    background-color: rgba(255, 87, 0, 0.1);
+    color: var(--brand-orange);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+}
+
+/* =========================================================
+   5. ESPECÍFICOS: FORMULÁRIOS EM PÁGINA (novalocacao.html)
+   ========================================================= */
+.form-card {
+    background-color: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 20px;
+    padding: 2rem;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
+}
