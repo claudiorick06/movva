@@ -1,3 +1,37 @@
+<?php
+session_start();
+if (!isset($_SESSION['id_atendente'])) {
+    header("Location: index.html");
+    exit;
+}
+
+require_once 'conexao.php';
+
+// Contadores para os cards superiores
+$totalDisponiveis = $pdo->query("SELECT COUNT(*) FROM veiculos WHERE status = 'Disponível'")->fetchColumn();
+$totalLocacoesAtivas = $pdo->query("SELECT COUNT(*) FROM locacoes WHERE status = 'Ativa'")->fetchColumn();
+$totalClientes = $pdo->query("SELECT COUNT(*) FROM cliente")->fetchColumn();
+$totalColaboradores = $pdo->query("SELECT COUNT(*) FROM atendentes")->fetchColumn();
+
+// Consulta das últimas 10 locações com JOIN nas 3 tabelas relacionadas
+$sqlUltimas = "SELECT 
+                l.id_locacao,
+                c.nome AS nome_cliente,
+                v.marca,
+                v.modelo,
+                v.placa,
+                a.nome AS nome_atendente,
+                l.data_retirada,
+                l.status
+               FROM locacoes l
+               INNER JOIN cliente c ON l.id_cliente = c.id_cliente
+               INNER JOIN veiculos v ON l.id_veiculo = v.id_veiculo
+               INNER JOIN atendentes a ON l.id_atendente = a.id_atendente
+               ORDER BY l.data_retirada DESC
+               LIMIT 10";
+
+$ultimasLocacoes = $pdo->query($sqlUltimas)->fetchAll(PDO::FETCH_ASSOC);
+?>
 <!DOCTYPE html>
 <html lang="pt-br" data-bs-theme="light">
 
@@ -10,6 +44,7 @@
     <!-- Bootstrap Icons -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
     <link rel="stylesheet" href="painelstyle.css">
+    <link rel="icon" href="images/logo-fav.png" type="image/png">
 </head>
 
 <body>
@@ -20,7 +55,7 @@
             <div>
                 <!-- Logo Header -->
                 <div class="sidebar-header text-center">
-                    <img src="./images/logo.png" alt="Movvi Logo" class="brand-logo-img">
+                    <img src="./images/logo.png" alt="Movva Logo" class="brand-logo-img">
                 </div>
 
                 <!-- Navegação -->
@@ -37,11 +72,12 @@
                         </a>
                         <div class="collapse show" id="homeSubmenu">
                             <ul class="submenu">
-                                <li><a href="novalocacao.html" class="submenu-link"><i
+                                <li><a href="novalocacao.php" class="submenu-link"><i
                                             class="bi bi-plus-circle me-1"></i> Nova Locação</a></li>
-                                <li><a href="locacoes.html" class="submenu-link"><i class="bi bi-file-text me-1"></i>
+                                <li><a href="locacoes.php" class="submenu-link"><i class="bi bi-file-text me-1"></i>
                                         Locações</a></li>
-                                <li><a href="#estatisticas" class="submenu-link"><i class="bi bi-graph-up me-1"></i>
+                                <li><a href="dashboard.php#estatisticas" class="submenu-link"><i
+                                            class="bi bi-graph-up me-1"></i>
                                         Estatísticas</a></li>
                             </ul>
                         </div>
@@ -57,9 +93,10 @@
                         </a>
                         <div class="collapse" id="veiculosSubmenu">
                             <ul class="submenu">
-                                <li><a href="veiculos.html" class="submenu-link">Frota Completa</a></li>
-                                <li><a href="veiculos.html?status=disponivel" class="submenu-link">Disponíveis</a></li>
-                                <li><a href="veiculos.html?status=manutencao" class="submenu-link">[Em Manutenção]</a>
+                                <li><a href="veiculos.php" class="submenu-link">Frota Completa</a></li>
+                                <li><a href="veiculos.php?status=Disponível" class="submenu-link">Disponíveis</a></li>
+                                <li><a href="veiculos.php?status=Alugado" class="submenu-link">Alugados</a></li>
+                                <li><a href="veiculos.php?status=Em manutenção" class="submenu-link">Em Manutenção</a>
                                 </li>
                             </ul>
                         </div>
@@ -67,7 +104,7 @@
 
                     <!-- Clientes -->
                     <li class="mt-2">
-                        <a href="clientes.html" class="nav-link">
+                        <a href="clientes.php" class="nav-link">
                             <span class="nav-link-content">
                                 <i class="bi bi-people"></i> Clientes
                             </span>
@@ -76,7 +113,7 @@
 
                     <!-- Colaboradores -->
                     <li class="mt-2">
-                        <a href="atendentes.html" class="nav-link">
+                        <a href="atendentes.php" class="nav-link">
                             <span class="nav-link-content">
                                 <i class="bi bi-person-badge"></i> Colaboradores
                             </span>
@@ -87,12 +124,12 @@
 
             <!-- Rodapé da Sidebar -->
             <div class="border-top pt-3">
-                <a href="sobre.html" class="nav-link text-secondary">
+                <a href="sobre.php" class="nav-link text-secondary">
                     <span class="nav-link-content">
                         <i class="bi bi-info-circle"></i> Sobre o sistema
                     </span>
                 </a>
-                <a href="index.html" class="nav-link text-danger mt-1">
+                <a href="logout.php" class="nav-link text-danger mt-1">
                     <span class="nav-link-content">
                         <i class="bi bi-box-arrow-right"></i> Sair
                     </span>
@@ -105,7 +142,9 @@
             <!-- Banner de Boas-Vindas -->
             <div class="welcome-card">
                 <div>
-                    <h1 class="display-5 fw-bold mb-0">BEM-VINDO!</h1>
+                    <h1 class="display-5 fw-bold mb-0">BEM-VINDO,
+                        <?php echo htmlspecialchars(strtoupper($_SESSION['nome_atendente'])); ?>!
+                    </h1>
                 </div>
 
                 <!-- Canto Inferior Esquerdo: Relógio e Data -->
@@ -115,13 +154,13 @@
                 </div>
             </div>
 
-            <!-- Indicadores / Cards de Métricas Zerados por Padrão -->
-            <div class="row g-3 mb-4">
+            <!-- Indicadores / Cards de Métricas -->
+            <div id="estatisticas" class="row g-3 mb-4">
                 <div class="col-md-3">
                     <div class="stat-card d-flex align-items-center justify-content-between">
                         <div>
                             <span class="text-secondary small fw-semibold">FROTA DISPONÍVEL</span>
-                            <h3 class="fw-bold mb-0 mt-1">0</h3>
+                            <h3 class="fw-bold mb-0 mt-1"><?php echo $totalDisponiveis; ?></h3>
                         </div>
                         <div class="stat-icon">
                             <i class="bi bi-car-front-fill"></i>
@@ -132,7 +171,7 @@
                     <div class="stat-card d-flex align-items-center justify-content-between">
                         <div>
                             <span class="text-secondary small fw-semibold">LOCAÇÕES ATIVAS</span>
-                            <h3 class="fw-bold mb-0 mt-1">0</h3>
+                            <h3 class="fw-bold mb-0 mt-1"><?php echo $totalLocacoesAtivas; ?></h3>
                         </div>
                         <div class="stat-icon" style="background-color: rgba(13, 110, 253, 0.1); color: #0d6efd;">
                             <i class="bi bi-key-fill"></i>
@@ -143,7 +182,7 @@
                     <div class="stat-card d-flex align-items-center justify-content-between">
                         <div>
                             <span class="text-secondary small fw-semibold">TOTAL CLIENTES</span>
-                            <h3 class="fw-bold mb-0 mt-1">0</h3>
+                            <h3 class="fw-bold mb-0 mt-1"><?php echo $totalClientes; ?></h3>
                         </div>
                         <div class="stat-icon" style="background-color: rgba(25, 135, 84, 0.1); color: #198754;">
                             <i class="bi bi-people-fill"></i>
@@ -154,7 +193,7 @@
                     <div class="stat-card d-flex align-items-center justify-content-between">
                         <div>
                             <span class="text-secondary small fw-semibold">COLABORADORES</span>
-                            <h3 class="fw-bold mb-0 mt-1">0</h3>
+                            <h3 class="fw-bold mb-0 mt-1"><?php echo $totalColaboradores; ?></h3>
                         </div>
                         <div class="stat-icon" style="background-color: rgba(108, 117, 125, 0.1); color: #6c757d;">
                             <i class="bi bi-person-badge-fill"></i>
@@ -163,13 +202,13 @@
                 </div>
             </div>
 
-            <!-- Tabela de Acessos Rápidos / Últimas Locações (Vazia por Padrão) -->
+            <!-- Tabela de Acessos Rápidos / Últimas Locações -->
             <div class="card border-0 shadow-sm" style="border-radius: 16px;">
                 <div class="card-header bg-white py-3 border-bottom d-flex justify-content-between align-items-center"
                     style="border-radius: 16px 16px 0 0;">
                     <h5 class="fw-bold mb-0"><i class="bi bi-clock-history me-2"
                             style="color: var(--brand-orange);"></i>Últimas Locações Registradas</h5>
-                    <a href="locacoes.html" class="btn btn-sm btn-outline-secondary" style="border-radius: 8px;">Ver
+                    <a href="locacoes.php" class="btn btn-sm btn-outline-secondary" style="border-radius: 8px;">Ver
                         Todas</a>
                 </div>
                 <div class="card-body p-0">
@@ -187,12 +226,45 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr>
-                                    <td colspan="7" class="text-center py-4 text-secondary">
-                                        <i class="bi bi-inbox fs-3 d-block mb-1"></i>
-                                        Nenhuma locação registrada até o momento.
-                                    </td>
-                                </tr>
+                                <?php if (count($ultimasLocacoes) > 0): ?>
+                                    <?php foreach ($ultimasLocacoes as $loc): ?>
+                                        <?php
+                                        $badgeClass = 'bg-secondary';
+                                        if ($loc['status'] === 'Ativa')
+                                            $badgeClass = 'bg-primary';
+                                        elseif ($loc['status'] === 'Finalizada')
+                                            $badgeClass = 'bg-success';
+                                        elseif ($loc['status'] === 'Cancelada')
+                                            $badgeClass = 'bg-danger';
+                                        ?>
+                                        <tr>
+                                            <td class="fw-bold">
+                                                #<?php echo str_pad($loc['id_locacao'], 4, '0', STR_PAD_LEFT); ?></td>
+                                            <td><?php echo htmlspecialchars($loc['nome_cliente']); ?></td>
+                                            <td><?php echo htmlspecialchars($loc['marca'] . ' ' . $loc['modelo']); ?> <span
+                                                    class="badge bg-light text-dark border"><?php echo htmlspecialchars($loc['placa']); ?></span>
+                                            </td>
+                                            <td><?php echo htmlspecialchars($loc['nome_atendente']); ?></td>
+                                            <td><?php echo date('d/m/Y H:i', strtotime($loc['data_retirada'])); ?></td>
+                                            <td><span
+                                                    class="badge <?php echo $badgeClass; ?>"><?php echo htmlspecialchars($loc['status']); ?></span>
+                                            </td>
+                                            <td class="text-end">
+                                                <a href="locacoes.php?id=<?php echo $loc['id_locacao']; ?>"
+                                                    class="btn btn-sm btn-outline-secondary" title="Ver na lista">
+                                                    <i class="bi bi-eye"></i>
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    <?php endforeach; ?>
+                                <?php else: ?>
+                                    <tr>
+                                        <td colspan="7" class="text-center py-4 text-secondary">
+                                            <i class="bi bi-inbox fs-3 d-block mb-1"></i>
+                                            Nenhuma locação registrada até o momento.
+                                        </td>
+                                    </tr>
+                                <?php endif; ?>
                             </tbody>
                         </table>
                     </div>

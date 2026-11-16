@@ -5,40 +5,33 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login</title>
-    <!-- Bootstrap 5 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Bootstrap Icons -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
-
     <link rel="stylesheet" href="indexstyle.css">
-
-    <link rel="icon" href="images/logo.png" type="image/png"> <!-- Fazer uma logo depois -->
+    <link rel="icon" href="images/logo.png" type="image/png">
 </head>
 
 <body>
 
     <div class="login-card">
-        <!-- Logo e Título -->
         <div class="text-center mb-4">
             <img src="./images/logo.png" alt="Movvi Logo" class="brand-logo-img mb-2">
             <p class="small mb-0" style="color: var(--text-muted);">Painel Operacional de Locação</p>
         </div>
 
-        <!-- Alerta de Erro de Login (Invisível por padrão) -->
         <div id="alert-erro" class="alert alert-danger d-none py-2 small text-center" role="alert">
-            <i class="bi bi-exclamation-triangle-fill me-1"></i> Usuário ou senha incorretos!
+            <i class="bi bi-exclamation-triangle-fill me-1"></i> <span id="msg-erro">Usuário ou senha incorretos!</span>
         </div>
 
-        <!-- Formulário de Autenticação -->
-        <form id="form-login" onsubmit="validarLogin(event)">
+        <form action="login.php" method="POST">
             <div class="mb-3">
                 <label for="usuario" class="form-label small" style="color: var(--text-muted);">Usuário / CPF</label>
                 <div class="input-group">
                     <span class="input-group-text">
                         <i class="bi bi-person"></i>
                     </span>
-                    <input type="text" class="form-control" id="usuario" placeholder="Digite seu usuário" required
-                        autofocus>
+                    <input type="text" class="form-control" id="usuario" name="login"
+                        placeholder="Digite seu usuário ou CPF" required autofocus>
                 </div>
             </div>
 
@@ -48,7 +41,7 @@
                     <span class="input-group-text">
                         <i class="bi bi-lock"></i>
                     </span>
-                    <input type="password" class="form-control" id="senha" placeholder="••••••••" required>
+                    <input type="password" class="form-control" id="senha" name="senha" placeholder="••••••••" required>
                 </div>
             </div>
 
@@ -62,29 +55,19 @@
         </div>
     </div>
 
-    <!-- Bootstrap 5 JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-
-    <!-- Script Inline de Autenticação Front-end (root / 0000) -->
     <script>
-        function validarLogin(event) {
-            // Impede o envio padrão do formulário
-            event.preventDefault();
-
-            const usuario = document.getElementById('usuario').value.trim();
-            const senha = document.getElementById('senha').value.trim();
+        const params = new URLSearchParams(window.location.search);
+        const erro = params.get('erro');
+        if (erro) {
             const alertErro = document.getElementById('alert-erro');
-
-            // Validação estática: root / 0000
-            if (usuario === 'root' && senha === '0000') {
-                alertErro.classList.add('d-none');
-
-                // Simulação de sucesso e direcionamento para a dashboard
-                window.location.href = 'dashboard.html';
-            } else {
-                // Exibe a mensagem de erro na tela
-                alertErro.classList.remove('d-none');
+            const msgErro = document.getElementById('msg-erro');
+            if (erro === 'inativo') {
+                msgErro.textContent = 'Acesso bloqueado: colaborador afastado ou desligado.';
+            } else if (erro === 'campos_vazios') {
+                msgErro.textContent = 'Preencha usuário e senha.';
             }
+            alertErro.classList.remove('d-none');
         }
     </script>
 </body>
