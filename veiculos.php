@@ -35,6 +35,7 @@ $veiculos = $stmt->fetchAll(PDO::FETCH_ASSOC);
 $tituloPagina = 'Gestão de Frota';
 $iconeTitulo = 'bi-car-front-fill';
 $corIcone = 'color: var(--brand-orange);';
+$subtituloPagina = 'Veículos pertencentes a frota.'; // Criei pra sair o erro da página de todos em veículos
 
 if ($statusFiltro === 'Disponível') {
     $tituloPagina = 'Veículos Disponíveis';

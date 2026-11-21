@@ -1,7 +1,13 @@
 <?php
 session_start();
 if (!isset($_SESSION['id_atendente'])) {
-    header("Location: index.html");
+    header("Location: index.php");
+    exit;
+}
+
+// Bloqueio no Back-End: Apenas Gerentes podem cadastrar ou editar colaboradores
+if (mb_strtolower(trim($_SESSION['cargo_atendente'] ?? '')) !== 'gerente') {
+    header("Location: atendentes.php?msg=sem_permissao");
     exit;
 }
 
@@ -46,6 +52,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 ':senha' => $senha,
                 ':id_atendente' => $id_atendente
             ]);
+
+            // Se o gerente editou o próprio perfil, atualiza a sessão imediatamente
+            if ((int)$id_atendente === (int)$_SESSION['id_atendente']) {
+                $_SESSION['nome_atendente'] = $nome;
+                $_SESSION['cargo_atendente'] = $cargo;
+            }
 
             header("Location: atendentes.php?msg=atualizado");
             exit;

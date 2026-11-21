@@ -1,10 +1,27 @@
+<?php
+session_start();
+require_once 'conexao.php';
+
+// Se já estiver logado, vai direto para o dashboard
+if (isset($_SESSION['id_atendente'])) {
+    header("Location: dashboard.php");
+    exit;
+}
+
+// Verifica se o banco está vazio (Primeiro Acesso)
+$totalAtendentes = (int) $pdo->query("SELECT COUNT(*) FROM atendentes")->fetchColumn();
+if ($totalAtendentes === 0) {
+    header("Location: primeiro_acesso.php");
+    exit;
+}
+?>
 <!DOCTYPE html>
 <html lang="pt-br" data-bs-theme="light">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login</title>
+    <title>Login - Movvi</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
     <link rel="stylesheet" href="indexstyle.css">
@@ -19,19 +36,20 @@
             <p class="small mb-0" style="color: var(--text-muted);">Painel Operacional de Locação</p>
         </div>
 
-        <div id="alert-erro" class="alert alert-danger d-none py-2 small text-center" role="alert">
-            <i class="bi bi-exclamation-triangle-fill me-1"></i> <span id="msg-erro">Usuário ou senha incorretos!</span>
+        <div id="alert-box" class="alert alert-danger d-none py-2 small text-center" role="alert">
+            <i id="alert-icon" class="bi bi-exclamation-triangle-fill me-1"></i>
+            <span id="msg-alerta">Usuário ou senha incorretos!</span>
         </div>
 
         <form action="login.php" method="POST">
             <div class="mb-3">
-                <label for="usuario" class="form-label small" style="color: var(--text-muted);">Usuário / CPF</label>
+                <label for="usuario" class="form-label small" style="color: var(--text-muted);">Usuário / Login</label>
                 <div class="input-group">
                     <span class="input-group-text">
                         <i class="bi bi-person"></i>
                     </span>
                     <input type="text" class="form-control" id="usuario" name="login"
-                        placeholder="Digite seu usuário ou CPF" required autofocus>
+                        placeholder="Digite seu login" required autofocus>
                 </div>
             </div>
 
@@ -59,15 +77,25 @@
     <script>
         const params = new URLSearchParams(window.location.search);
         const erro = params.get('erro');
+        const msg = params.get('msg');
+        const alertBox = document.getElementById('alert-box');
+        const msgAlerta = document.getElementById('msg-alerta');
+        const alertIcon = document.getElementById('alert-icon');
+
         if (erro) {
-            const alertErro = document.getElementById('alert-erro');
-            const msgErro = document.getElementById('msg-erro');
             if (erro === 'inativo') {
-                msgErro.textContent = 'Acesso bloqueado: colaborador afastado ou desligado.';
+                msgAlerta.textContent = 'Acesso bloqueado: colaborador afastado ou desligado.';
             } else if (erro === 'campos_vazios') {
-                msgErro.textContent = 'Preencha usuário e senha.';
+                msgAlerta.textContent = 'Preencha usuário e senha.';
+            } else if (erro === 'setup_bloqueado') {
+                msgAlerta.textContent = 'Configuração inicial já realizada. Faça login.';
             }
-            alertErro.classList.remove('d-none');
+            alertBox.classList.remove('d-none');
+        } else if (msg === 'setup_concluido') {
+            alertBox.classList.remove('alert-danger', 'd-none');
+            alertBox.classList.add('alert-success');
+            alertIcon.className = 'bi bi-check-circle-fill me-1';
+            msgAlerta.textContent = 'Administrador cadastrado! Faça seu primeiro login.';
         }
     </script>
 </body>

@@ -1,11 +1,14 @@
 <?php
 session_start();
 if (!isset($_SESSION['id_atendente'])) {
-    header("Location: index.html");
+    header("Location: index.php");
     exit;
 }
 
 require_once 'conexao.php';
+
+// Verifica se o usuário logado possui cargo de Gerente
+$isGerente = (mb_strtolower(trim($_SESSION['cargo_atendente'] ?? '')) === 'gerente');
 
 $busca = trim($_GET['busca'] ?? '');
 if ($busca !== '') {
@@ -23,9 +26,7 @@ $atendentes = $stmt->fetchAll(PDO::FETCH_ASSOC);
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Colaboradores</title>
-    <!-- Bootstrap 5 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Bootstrap Icons -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
     <link rel="stylesheet" href="painelstyle.css">
     <link rel="icon" href="images/logo-fav.png" type="image/png">
@@ -121,7 +122,7 @@ $atendentes = $stmt->fetchAll(PDO::FETCH_ASSOC);
                     <h3 class="fw-bold mb-1"><i class="bi bi-person-badge-fill me-2"
                             style="color: var(--brand-orange);"></i>Gestão de Colaboradores</h3>
                 </div>
-                <div class="d-flex gap-2">
+                <div class="d-flex gap-2 align-items-center">
                     <form action="atendentes.php" method="GET" class="d-flex gap-2">
                         <input type="text" name="busca" class="form-control" placeholder="Buscar nome, CPF ou cargo..."
                             value="<?php echo htmlspecialchars($busca); ?>" style="border-radius: 10px;">
@@ -135,10 +136,17 @@ $atendentes = $stmt->fetchAll(PDO::FETCH_ASSOC);
                             </a>
                         <?php endif; ?>
                     </form>
-                    <button type="button" class="btn btn-orange" data-bs-toggle="modal"
-                        data-bs-target="#modalNovoAtendente">
-                        <i class="bi bi-plus-lg me-1"></i> Novo Colaborador
-                    </button>
+
+                    <?php if ($isGerente): ?>
+                        <button type="button" class="btn btn-orange" data-bs-toggle="modal"
+                            data-bs-target="#modalNovoAtendente">
+                            <i class="bi bi-plus-lg me-1"></i> Novo Colaborador
+                        </button>
+                    <?php else: ?>
+                        <span class="badge bg-light text-secondary border py-2 px-3">
+                            <i class="bi bi-lock me-1"></i> Somente Leitura
+                        </span>
+                    <?php endif; ?>
                 </div>
             </div>
 
@@ -176,6 +184,11 @@ $atendentes = $stmt->fetchAll(PDO::FETCH_ASSOC);
                         <i class="bi bi-lock-fill me-1"></i> O usuário administrador principal (ID 1) não pode ser excluído.
                         <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                     </div>
+                <?php elseif ($_GET['msg'] === 'sem_permissao'): ?>
+                    <div class="alert alert-danger alert-dismissible fade show py-2 small" role="alert">
+                        <i class="bi bi-shield-lock-fill me-1"></i> Acesso negado: apenas colaboradores com cargo de <strong>Gerente</strong> podem cadastrar, editar ou excluir usuários.
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
                 <?php endif; ?>
             <?php endif; ?>
 
@@ -192,7 +205,9 @@ $atendentes = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                 <th>Login</th>
                                 <th>Telefone</th>
                                 <th>Status</th>
-                                <th class="text-end">Ações</th>
+                                <?php if ($isGerente): ?>
+                                    <th class="text-end">Ações</th>
+                                <?php endif; ?>
                             </tr>
                         </thead>
                         <tbody>
@@ -214,7 +229,11 @@ $atendentes = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                             <small class="text-secondary"><?php echo htmlspecialchars($at['email']); ?></small>
                                         </td>
                                         <td><?php echo htmlspecialchars($at['cpf']); ?></td>
-                                        <td><?php echo htmlspecialchars($at['cargo']); ?></td>
+                                        <td>
+                                            <span class="badge <?php echo (mb_strtolower($at['cargo']) === 'gerente') ? 'bg-dark' : 'bg-secondary'; ?>">
+                                                <?php echo htmlspecialchars($at['cargo']); ?>
+                                            </span>
+                                        </td>
                                         <td><span
                                                 class="badge bg-light text-dark border"><?php echo htmlspecialchars($at['login']); ?></span>
                                         </td>
@@ -222,25 +241,27 @@ $atendentes = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                         <td><span
                                                 class="badge <?php echo $badgeStatus; ?>"><?php echo htmlspecialchars($at['status']); ?></span>
                                         </td>
-                                        <td class="text-end">
-                                            <button type="button" class="btn btn-sm btn-outline-primary"
-                                                title="Editar colaborador"
-                                                onclick='abrirModalEditar(<?php echo json_encode($at, JSON_HEX_APOS | JSON_HEX_QUOT); ?>)'>
-                                                <i class="bi bi-pencil-square"></i>
-                                            </button>
-                                            <?php if ($at['id_atendente'] != 1): ?>
-                                                <a href="atendente_excluir.php?id=<?php echo $at['id_atendente']; ?>"
-                                                    class="btn btn-sm btn-outline-danger" title="Excluir colaborador"
-                                                    onclick="return confirm('Tem certeza que deseja excluir <?php echo htmlspecialchars(addslashes($at['nome'])); ?>?');">
-                                                    <i class="bi bi-trash"></i>
-                                                </a>
-                                            <?php endif; ?>
-                                        </td>
+                                        <?php if ($isGerente): ?>
+                                            <td class="text-end">
+                                                <button type="button" class="btn btn-sm btn-outline-primary"
+                                                    title="Editar colaborador"
+                                                    onclick='abrirModalEditar(<?php echo json_encode($at, JSON_HEX_APOS | JSON_HEX_QUOT); ?>)'>
+                                                    <i class="bi bi-pencil-square"></i>
+                                                </button>
+                                                <?php if ($at['id_atendente'] != 1 && $at['id_atendente'] != $_SESSION['id_atendente']): ?>
+                                                    <a href="atendente_excluir.php?id=<?php echo $at['id_atendente']; ?>"
+                                                        class="btn btn-sm btn-outline-danger" title="Excluir colaborador"
+                                                        onclick="return confirm('Tem certeza que deseja excluir <?php echo htmlspecialchars(addslashes($at['nome'])); ?>?');">
+                                                        <i class="bi bi-trash"></i>
+                                                    </a>
+                                                <?php endif; ?>
+                                            </td>
+                                        <?php endif; ?>
                                     </tr>
                                 <?php endforeach; ?>
                             <?php else: ?>
                                 <tr>
-                                    <td colspan="8" class="text-center py-5 text-secondary">
+                                    <td colspan="<?php echo $isGerente ? '8' : '7'; ?>" class="text-center py-5 text-secondary">
                                         <i class="bi bi-person-badge fs-2 d-block mb-2 text-muted"></i>
                                         Nenhum colaborador encontrado no banco de dados.
                                     </td>
@@ -253,164 +274,173 @@ $atendentes = $stmt->fetchAll(PDO::FETCH_ASSOC);
         </main>
     </div>
 
-    <!-- Modal: Cadastrar Novo Colaborador -->
-    <div class="modal fade" id="modalNovoAtendente" tabindex="-1" aria-labelledby="modalNovoAtendenteLabel"
-        aria-hidden="true">
-        <div class="modal-dialog modal-lg modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header border-bottom px-4 py-3">
-                    <h5 class="modal-title fw-bold" id="modalNovoAtendenteLabel">
-                        <i class="bi bi-person-badge-fill me-2" style="color: var(--brand-orange);"></i>Cadastrar Novo
-                        Colaborador
-                    </h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
-                </div>
-                <form action="atendente_salvar.php" method="POST">
-                    <div class="modal-body p-4">
-                        <h6 class="fw-bold text-dark mb-3 pb-2 border-bottom">Dados Funcionais</h6>
-                        <div class="row g-3 mb-4">
-                            <div class="col-md-8">
-                                <label class="form-label small fw-semibold text-secondary">Nome Completo *</label>
-                                <input type="text" class="form-control" name="nome"
-                                    placeholder="Digite o nome completo do colaborador" required>
+    <?php if ($isGerente): ?>
+        <!-- Modal: Cadastrar Novo Colaborador -->
+        <div class="modal fade" id="modalNovoAtendente" tabindex="-1" aria-labelledby="modalNovoAtendenteLabel"
+            aria-hidden="true">
+            <div class="modal-dialog modal-lg modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header border-bottom px-4 py-3">
+                        <h5 class="modal-title fw-bold" id="modalNovoAtendenteLabel">
+                            <i class="bi bi-person-badge-fill me-2" style="color: var(--brand-orange);"></i>Cadastrar Novo
+                            Colaborador
+                        </h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+                    </div>
+                    <form action="atendente_salvar.php" method="POST">
+                        <div class="modal-body p-4">
+                            <h6 class="fw-bold text-dark mb-3 pb-2 border-bottom">Dados Funcionais</h6>
+                            <div class="row g-3 mb-4">
+                                <div class="col-md-8">
+                                    <label class="form-label small fw-semibold text-secondary">Nome Completo *</label>
+                                    <input type="text" class="form-control" name="nome"
+                                        placeholder="Digite o nome completo do colaborador" required>
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label small fw-semibold text-secondary">CPF *</label>
+                                    <input type="text" class="form-control" name="cpf" placeholder="000.000.000-00"
+                                        maxlength="14" required>
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label small fw-semibold text-secondary">Cargo *</label>
+                                    <select class="form-select" name="cargo" required>
+                                        <option value="Atendente" selected>Atendente</option>
+                                        <option value="Gerente">Gerente</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label small fw-semibold text-secondary">Data de Admissão *</label>
+                                    <input type="date" class="form-control" name="data_admissao"
+                                        value="<?php echo date('Y-m-d'); ?>" required>
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label small fw-semibold text-secondary">Status *</label>
+                                    <select class="form-select" name="status" required>
+                                        <option value="Contratado" selected>Contratado</option>
+                                        <option value="Afastado">Afastado</option>
+                                        <option value="Desligado">Desligado</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label small fw-semibold text-secondary">E-mail Corporativo *</label>
+                                    <input type="email" class="form-control" name="email" placeholder="nome@movvi.com.br"
+                                        required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label small fw-semibold text-secondary">Telefone *</label>
+                                    <input type="text" class="form-control" name="telefone" placeholder="(22) 99999-9999"
+                                        required>
+                                </div>
                             </div>
-                            <div class="col-md-4">
-                                <label class="form-label small fw-semibold text-secondary">CPF *</label>
-                                <input type="text" class="form-control" name="cpf" placeholder="000.000.000-00"
-                                    maxlength="14" required>
-                            </div>
-                            <div class="col-md-4">
-                                <label class="form-label small fw-semibold text-secondary">Cargo *</label>
-                                <input type="text" class="form-control" name="cargo" value="Atendente" required>
-                            </div>
-                            <div class="col-md-4">
-                                <label class="form-label small fw-semibold text-secondary">Data de Admissão *</label>
-                                <input type="date" class="form-control" name="data_admissao"
-                                    value="<?php echo date('Y-m-d'); ?>" required>
-                            </div>
-                            <div class="col-md-4">
-                                <label class="form-label small fw-semibold text-secondary">Status *</label>
-                                <select class="form-select" name="status" required>
-                                    <option value="Contratado" selected>Contratado</option>
-                                    <option value="Afastado">Afastado</option>
-                                    <option value="Desligado">Desligado</option>
-                                </select>
-                            </div>
-                            <div class="col-md-6">
-                                <label class="form-label small fw-semibold text-secondary">E-mail Corporativo *</label>
-                                <input type="email" class="form-control" name="email" placeholder="nome@mova.com.br"
-                                    required>
-                            </div>
-                            <div class="col-md-6">
-                                <label class="form-label small fw-semibold text-secondary">Telefone *</label>
-                                <input type="text" class="form-control" name="telefone" placeholder="(22) 99999-9999"
-                                    required>
-                            </div>
-                        </div>
 
-                        <h6 class="fw-bold text-dark mb-3 pb-2 border-bottom">Credenciais de Acesso ao Sistema</h6>
-                        <div class="row g-3">
-                            <div class="col-md-6">
-                                <label class="form-label small fw-semibold text-secondary">Login de Acesso *</label>
-                                <input type="text" class="form-control" name="login" placeholder="ex: joao.silva"
-                                    required>
-                            </div>
-                            <div class="col-md-6">
-                                <label class="form-label small fw-semibold text-secondary">Senha *</label>
-                                <input type="password" class="form-control" name="senha" placeholder="Defina uma senha"
-                                    required>
+                            <h6 class="fw-bold text-dark mb-3 pb-2 border-bottom">Credenciais de Acesso ao Sistema</h6>
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label class="form-label small fw-semibold text-secondary">Login de Acesso *</label>
+                                    <input type="text" class="form-control" name="login" placeholder="ex: joao.silva"
+                                        required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label small fw-semibold text-secondary">Senha *</label>
+                                    <input type="password" class="form-control" name="senha" placeholder="Defina uma senha"
+                                        required>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                    <div class="modal-footer border-top px-4 py-3">
-                        <button type="button" class="btn btn-light" data-bs-dismiss="modal"
-                            style="border-radius: 10px; border: 1px solid var(--card-border);">Cancelar</button>
-                        <button type="submit" class="btn btn-orange">
-                            <i class="bi bi-check-circle me-1"></i> Salvar Colaborador
-                        </button>
-                    </div>
-                </form>
+                        <div class="modal-footer border-top px-4 py-3">
+                            <button type="button" class="btn btn-light" data-bs-dismiss="modal"
+                                style="border-radius: 10px; border: 1px solid var(--card-border);">Cancelar</button>
+                            <button type="submit" class="btn btn-orange">
+                                <i class="bi bi-check-circle me-1"></i> Salvar Colaborador
+                            </button>
+                        </div>
+                    </form>
+                </div>
             </div>
         </div>
-    </div>
 
-    <!-- Modal: Editar Colaborador -->
-    <div class="modal fade" id="modalEditarAtendente" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog modal-lg modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header border-bottom px-4 py-3">
-                    <h5 class="modal-title fw-bold">
-                        <i class="bi bi-pencil-square me-2" style="color: var(--brand-orange);"></i>Editar Colaborador
-                    </h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+        <!-- Modal: Editar Colaborador -->
+        <div class="modal fade" id="modalEditarAtendente" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog modal-lg modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header border-bottom px-4 py-3">
+                        <h5 class="modal-title fw-bold">
+                            <i class="bi bi-pencil-square me-2" style="color: var(--brand-orange);"></i>Editar Colaborador
+                        </h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+                    </div>
+                    <form action="atendente_salvar.php" method="POST">
+                        <input type="hidden" name="id_atendente" id="edit_id_atendente">
+                        <div class="modal-body p-4">
+                            <h6 class="fw-bold text-dark mb-3 pb-2 border-bottom">Dados Funcionais</h6>
+                            <div class="row g-3 mb-4">
+                                <div class="col-md-8">
+                                    <label class="form-label small fw-semibold text-secondary">Nome Completo *</label>
+                                    <input type="text" class="form-control" id="edit_nome" name="nome" required>
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label small fw-semibold text-secondary">CPF *</label>
+                                    <input type="text" class="form-control" id="edit_cpf" name="cpf" maxlength="14"
+                                        required>
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label small fw-semibold text-secondary">Cargo *</label>
+                                    <select class="form-select" id="edit_cargo" name="cargo" required>
+                                        <option value="Atendente">Atendente</option>
+                                        <option value="Gerente">Gerente</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label small fw-semibold text-secondary">Data de Admissão *</label>
+                                    <input type="date" class="form-control" id="edit_data_admissao" name="data_admissao"
+                                        required>
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label small fw-semibold text-secondary">Status *</label>
+                                    <select class="form-select" id="edit_status" name="status" required>
+                                        <option value="Contratado">Contratado</option>
+                                        <option value="Afastado">Afastado</option>
+                                        <option value="Desligado">Desligado</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label small fw-semibold text-secondary">E-mail Corporativo *</label>
+                                    <input type="email" class="form-control" id="edit_email" name="email" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label small fw-semibold text-secondary">Telefone *</label>
+                                    <input type="text" class="form-control" id="edit_telefone" name="telefone" required>
+                                </div>
+                            </div>
+
+                            <h6 class="fw-bold text-dark mb-3 pb-2 border-bottom">Credenciais de Acesso</h6>
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label class="form-label small fw-semibold text-secondary">Login de Acesso *</label>
+                                    <input type="text" class="form-control" id="edit_login" name="login" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label small fw-semibold text-secondary">Senha *</label>
+                                    <input type="text" class="form-control" id="edit_senha" name="senha" required>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer border-top px-4 py-3">
+                            <button type="button" class="btn btn-light" data-bs-dismiss="modal"
+                                style="border-radius: 10px; border: 1px solid var(--card-border);">Cancelar</button>
+                            <button type="submit" class="btn btn-orange">
+                                <i class="bi bi-check-circle me-1"></i> Atualizar Colaborador
+                            </button>
+                        </div>
+                    </form>
                 </div>
-                <form action="atendente_salvar.php" method="POST">
-                    <input type="hidden" name="id_atendente" id="edit_id_atendente">
-                    <div class="modal-body p-4">
-                        <h6 class="fw-bold text-dark mb-3 pb-2 border-bottom">Dados Funcionais</h6>
-                        <div class="row g-3 mb-4">
-                            <div class="col-md-8">
-                                <label class="form-label small fw-semibold text-secondary">Nome Completo *</label>
-                                <input type="text" class="form-control" id="edit_nome" name="nome" required>
-                            </div>
-                            <div class="col-md-4">
-                                <label class="form-label small fw-semibold text-secondary">CPF *</label>
-                                <input type="text" class="form-control" id="edit_cpf" name="cpf" maxlength="14"
-                                    required>
-                            </div>
-                            <div class="col-md-4">
-                                <label class="form-label small fw-semibold text-secondary">Cargo *</label>
-                                <input type="text" class="form-control" id="edit_cargo" name="cargo" required>
-                            </div>
-                            <div class="col-md-4">
-                                <label class="form-label small fw-semibold text-secondary">Data de Admissão *</label>
-                                <input type="date" class="form-control" id="edit_data_admissao" name="data_admissao"
-                                    required>
-                            </div>
-                            <div class="col-md-4">
-                                <label class="form-label small fw-semibold text-secondary">Status *</label>
-                                <select class="form-select" id="edit_status" name="status" required>
-                                    <option value="Contratado">Contratado</option>
-                                    <option value="Afastado">Afastado</option>
-                                    <option value="Desligado">Desligado</option>
-                                </select>
-                            </div>
-                            <div class="col-md-6">
-                                <label class="form-label small fw-semibold text-secondary">E-mail Corporativo *</label>
-                                <input type="email" class="form-control" id="edit_email" name="email" required>
-                            </div>
-                            <div class="col-md-6">
-                                <label class="form-label small fw-semibold text-secondary">Telefone *</label>
-                                <input type="text" class="form-control" id="edit_telefone" name="telefone" required>
-                            </div>
-                        </div>
-
-                        <h6 class="fw-bold text-dark mb-3 pb-2 border-bottom">Credenciais de Acesso</h6>
-                        <div class="row g-3">
-                            <div class="col-md-6">
-                                <label class="form-label small fw-semibold text-secondary">Login de Acesso *</label>
-                                <input type="text" class="form-control" id="edit_login" name="login" required>
-                            </div>
-                            <div class="col-md-6">
-                                <label class="form-label small fw-semibold text-secondary">Senha *</label>
-                                <input type="text" class="form-control" id="edit_senha" name="senha" required>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="modal-footer border-top px-4 py-3">
-                        <button type="button" class="btn btn-light" data-bs-dismiss="modal"
-                            style="border-radius: 10px; border: 1px solid var(--card-border);">Cancelar</button>
-                        <button type="submit" class="btn btn-orange">
-                            <i class="bi bi-check-circle me-1"></i> Atualizar Colaborador
-                        </button>
-                    </div>
-                </form>
             </div>
         </div>
-    </div>
+    <?php endif; ?>
 
     <!-- Bootstrap 5 JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <?php if ($isGerente): ?>
     <script>
         function abrirModalEditar(atendente) {
             document.getElementById('edit_id_atendente').value = atendente.id_atendente;
@@ -428,6 +458,7 @@ $atendentes = $stmt->fetchAll(PDO::FETCH_ASSOC);
             modal.show();
         }
     </script>
+    <?php endif; ?>
 </body>
 
 </html>
