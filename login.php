@@ -7,7 +7,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $senha = trim($_POST['senha'] ?? '');
 
     if ($login === '' || $senha === '') {
-        header("Location: index.html?erro=campos_vazios");
+        header("Location: index.php?erro=campos_vazios");
         exit;
     }
 
@@ -21,7 +21,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     if ($atendente) {
         if ($atendente['status'] !== 'Contratado') {
-            header("Location: index.html?erro=inativo");
+            header("Location: index.php?erro=inativo");
             exit;
         }
 
@@ -32,11 +32,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         header("Location: dashboard.php");
         exit;
     } else {
-        header("Location: index.html?erro=invalido");
+        header("Location: index.php?erro=invalido");
         exit;
     }
 } else {
-    header("Location: index.html");
+    header("Location: index.php");
     exit;
 }
 ?>
