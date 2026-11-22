@@ -25,7 +25,7 @@ if ($totalAtendentes === 0) {
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
     <link rel="stylesheet" href="indexstyle.css">
-    <link rel="icon" href="images/logo.png" type="image/png">
+    <link rel="icon" href="images/logo-fav.png" type="image/png">
 </head>
 
 <body>
