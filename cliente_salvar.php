@@ -10,9 +10,8 @@ require_once 'conexao.php';
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $id_cliente = trim($_POST['id_cliente'] ?? '');
     $nome = trim($_POST['nome'] ?? '');
-    $cpf = trim($_POST['cpf'] ?? '');
-    $cnh = trim($_POST['cnh'] ?? '');
-    $telefone = trim($_POST['telefone'] ?? '');
+    $cpf = preg_replace('/\D/', '', $_POST['cpf'] ?? '');
+    $telefone = preg_replace('/\D/', '', $_POST['telefone'] ?? '');
     $email = trim($_POST['email'] ?? '');
     $cep = trim($_POST['cep'] ?? '');
     $logradouro = trim($_POST['logradouro'] ?? '');
@@ -26,7 +25,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $sql = "UPDATE cliente SET 
                         nome = :nome,
                         cpf = :cpf,
-                        cnh = :cnh,
                         telefone = :telefone,
                         email = :email,
                         cep = :cep,
@@ -41,7 +39,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $stmt->execute([
                 ':nome' => $nome,
                 ':cpf' => $cpf,
-                ':cnh' => $cnh,
                 ':telefone' => $telefone,
                 ':email' => $email,
                 ':cep' => $cep,
@@ -56,14 +53,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             header("Location: clientes.php?msg=atualizado");
             exit;
         } else {
-            $sql = "INSERT INTO cliente (nome, cpf, cnh, telefone, email, cep, logradouro, numero, bairro, cidade, estado)
-                    VALUES (:nome, :cpf, :cnh, :telefone, :email, :cep, :logradouro, :numero, :bairro, :cidade, :estado)";
+            $sql = "INSERT INTO cliente (nome, cpf, telefone, email, cep, logradouro, numero, bairro, cidade, estado)
+                    VALUES (:nome, :cpf, :telefone, :email, :cep, :logradouro, :numero, :bairro, :cidade, :estado)";
 
             $stmt = $pdo->prepare($sql);
             $stmt->execute([
                 ':nome' => $nome,
                 ':cpf' => $cpf,
-                ':cnh' => $cnh,
                 ':telefone' => $telefone,
                 ':email' => $email,
                 ':cep' => $cep,

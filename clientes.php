@@ -9,7 +9,7 @@ require_once 'conexao.php';
 
 $busca = trim($_GET['busca'] ?? '');
 if ($busca !== '') {
-    $stmt = $pdo->prepare("SELECT * FROM cliente WHERE nome LIKE :busca OR cpf LIKE :busca OR cnh LIKE :busca ORDER BY id_cliente DESC");
+    $stmt = $pdo->prepare("SELECT * FROM cliente WHERE nome LIKE :busca OR cpf LIKE :busca ORDER BY id_cliente DESC");
     $stmt->execute([':busca' => "%$busca%"]);
 } else {
     $stmt = $pdo->query("SELECT * FROM cliente ORDER BY id_cliente DESC");
@@ -26,7 +26,7 @@ $clientes = $stmt->fetchAll(PDO::FETCH_ASSOC);
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
     <link rel="stylesheet" href="painelstyle.css">
-    <link rel="icon" href="images/logo-fav.png" type="image/png">
+    <link rel="icon" href="images/logo.png" type="image/png">
 </head>
 
 <body>
@@ -115,10 +115,11 @@ $clientes = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 <div>
                     <h3 class="fw-bold mb-1"><i class="bi bi-people-fill me-2"
                             style="color: var(--brand-orange);"></i>Base de Clientes</h3>
+                    <p class="text-secondary small mb-0">Clientes cadastrados para locação na Movva.</p>
                 </div>
                 <div class="d-flex gap-2">
                     <form action="clientes.php" method="GET" class="d-flex gap-2">
-                        <input type="text" name="busca" class="form-control" placeholder="Buscar nome, CPF ou CNH..."
+                        <input type="text" name="busca" class="form-control" placeholder="Buscar nome ou CPF..."
                             value="<?php echo htmlspecialchars($busca); ?>" style="border-radius: 10px;">
                         <button type="submit" class="btn btn-outline-secondary" style="border-radius: 10px;">
                             <i class="bi bi-search"></i>
@@ -155,8 +156,7 @@ $clientes = $stmt->fetchAll(PDO::FETCH_ASSOC);
                     </div>
                 <?php elseif ($_GET['msg'] === 'duplicado'): ?>
                     <div class="alert alert-danger alert-dismissible fade show py-2 small" role="alert">
-                        <i class="bi bi-exclamation-triangle-fill me-1"></i> Erro: CPF ou CNH já está cadastrado em outro
-                        cliente.
+                        <i class="bi bi-exclamation-triangle-fill me-1"></i> Erro: CPF já está cadastrado em outro cliente.
                         <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                     </div>
                 <?php elseif ($_GET['msg'] === 'vinculado'): ?>
@@ -176,7 +176,6 @@ $clientes = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                 <th>#ID</th>
                                 <th>Nome Completo</th>
                                 <th>CPF (Chave Operação)</th>
-                                <th>CNH</th>
                                 <th>Telefone</th>
                                 <th>Cidade / UF</th>
                                 <th class="text-end">Ações</th>
@@ -191,10 +190,7 @@ $clientes = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                             <div class="fw-semibold"><?php echo htmlspecialchars($cli['nome']); ?></div>
                                             <small class="text-secondary"><?php echo htmlspecialchars($cli['email']); ?></small>
                                         </td>
-                                        <td><?php echo htmlspecialchars($cli['cpf']); ?></td>
-                                        <td><span
-                                                class="badge bg-light text-dark border font-monospace"><?php echo htmlspecialchars($cli['cnh']); ?></span>
-                                        </td>
+                                        <td class="font-monospace"><?php echo htmlspecialchars($cli['cpf']); ?></td>
                                         <td><?php echo htmlspecialchars($cli['telefone']); ?></td>
                                         <td><?php echo htmlspecialchars($cli['cidade'] . '/' . $cli['estado']); ?></td>
                                         <td class="text-end">
@@ -212,7 +208,7 @@ $clientes = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                 <?php endforeach; ?>
                             <?php else: ?>
                                 <tr>
-                                    <td colspan="7" class="text-center py-5 text-secondary">
+                                    <td colspan="6" class="text-center py-5 text-secondary">
                                         <i class="bi bi-people fs-2 d-block mb-2 text-muted"></i>
                                         Nenhum cliente encontrado no banco de dados.
                                     </td>
@@ -239,7 +235,7 @@ $clientes = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 </div>
                 <form action="cliente_salvar.php" method="POST">
                     <div class="modal-body p-4">
-                        <h6 class="fw-bold text-dark mb-3 pb-2 border-bottom">Dados Pessoais & Habilitação</h6>
+                        <h6 class="fw-bold text-dark mb-3 pb-2 border-bottom">Dados Pessoais</h6>
                         <div class="row g-3 mb-4">
                             <div class="col-md-8">
                                 <label class="form-label small fw-semibold text-secondary">Nome Completo *</label>
@@ -247,21 +243,20 @@ $clientes = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                     required>
                             </div>
                             <div class="col-md-4">
-                                <label class="form-label small fw-semibold text-secondary">CPF *</label>
-                                <input type="text" class="form-control" name="cpf" placeholder="000.000.000-00"
-                                    maxlength="14" required>
-                            </div>
-                            <div class="col-md-4">
-                                <label class="form-label small fw-semibold text-secondary">Número da CNH *</label>
-                                <input type="text" class="form-control" name="cnh" placeholder="00000000000"
-                                    maxlength="11" required>
-                            </div>
-                            <div class="col-md-4">
-                                <label class="form-label small fw-semibold text-secondary">Telefone *</label>
-                                <input type="text" class="form-control" name="telefone" placeholder="(22) 99999-9999"
+                                <label class="form-label small fw-semibold text-secondary">CPF (somente números)
+                                    *</label>
+                                <input type="text" class="form-control" name="cpf" placeholder="00000000000"
+                                    maxlength="11" pattern="\d{11}" oninput="this.value = this.value.replace(/\D/g, '')"
                                     required>
                             </div>
-                            <div class="col-md-4">
+                            <div class="col-md-5">
+                                <label class="form-label small fw-semibold text-secondary">Telefone (somente números)
+                                    *</label>
+                                <input type="text" class="form-control" name="telefone" placeholder="22999999999"
+                                    maxlength="11" pattern="\d{10,11}"
+                                    oninput="this.value = this.value.replace(/\D/g, '')" required>
+                            </div>
+                            <div class="col-md-7">
                                 <label class="form-label small fw-semibold text-secondary">E-mail *</label>
                                 <input type="email" class="form-control" name="email" placeholder="cliente@email.com"
                                     required>
@@ -324,27 +319,26 @@ $clientes = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 <form action="cliente_salvar.php" method="POST">
                     <input type="hidden" name="id_cliente" id="edit_id_cliente">
                     <div class="modal-body p-4">
-                        <h6 class="fw-bold text-dark mb-3 pb-2 border-bottom">Dados Pessoais & Habilitação</h6>
+                        <h6 class="fw-bold text-dark mb-3 pb-2 border-bottom">Dados Pessoais</h6>
                         <div class="row g-3 mb-4">
                             <div class="col-md-8">
                                 <label class="form-label small fw-semibold text-secondary">Nome Completo *</label>
                                 <input type="text" class="form-control" id="edit_nome" name="nome" required>
                             </div>
                             <div class="col-md-4">
-                                <label class="form-label small fw-semibold text-secondary">CPF *</label>
-                                <input type="text" class="form-control" id="edit_cpf" name="cpf" maxlength="14"
-                                    required>
+                                <label class="form-label small fw-semibold text-secondary">CPF (somente números)
+                                    *</label>
+                                <input type="text" class="form-control" id="edit_cpf" name="cpf" maxlength="11"
+                                    pattern="\d{11}" oninput="this.value = this.value.replace(/\D/g, '')" required>
                             </div>
-                            <div class="col-md-4">
-                                <label class="form-label small fw-semibold text-secondary">Número da CNH *</label>
-                                <input type="text" class="form-control" id="edit_cnh" name="cnh" maxlength="11"
-                                    required>
+                            <div class="col-md-5">
+                                <label class="form-label small fw-semibold text-secondary">Telefone (somente números)
+                                    *</label>
+                                <input type="text" class="form-control" id="edit_telefone" name="telefone"
+                                    maxlength="11" pattern="\d{10,11}"
+                                    oninput="this.value = this.value.replace(/\D/g, '')" required>
                             </div>
-                            <div class="col-md-4">
-                                <label class="form-label small fw-semibold text-secondary">Telefone *</label>
-                                <input type="text" class="form-control" id="edit_telefone" name="telefone" required>
-                            </div>
-                            <div class="col-md-4">
+                            <div class="col-md-7">
                                 <label class="form-label small fw-semibold text-secondary">E-mail *</label>
                                 <input type="email" class="form-control" id="edit_email" name="email" required>
                             </div>
@@ -397,7 +391,6 @@ $clientes = $stmt->fetchAll(PDO::FETCH_ASSOC);
             document.getElementById('edit_id_cliente').value = cliente.id_cliente;
             document.getElementById('edit_nome').value = cliente.nome;
             document.getElementById('edit_cpf').value = cliente.cpf;
-            document.getElementById('edit_cnh').value = cliente.cnh;
             document.getElementById('edit_telefone').value = cliente.telefone;
             document.getElementById('edit_email').value = cliente.email;
             document.getElementById('edit_cep').value = cliente.cep;

@@ -1,0 +1,347 @@
+/* =========================================================
+   SOBRE O SISTEMA - EDITORIAL COM CROSSFADE BOOTSTRAP
+   ========================================================= */
+
+.about-page {
+    max-width: 1040px;
+    margin: 0 auto;
+    padding-bottom: 70px;
+}
+
+/* Índice superior (sincronizado com o slide ativo) */
+.about-nav {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 20px;
+    padding: 14px 0 20px 0;
+    border-bottom: 1px solid #e2e8f0;
+    margin-bottom: 24px;
+}
+
+.about-nav button {
+    background: transparent;
+    border: none;
+    border-bottom: 2px solid transparent;
+    font-size: 0.88rem;
+    font-weight: 600;
+    color: #64748b;
+    padding: 0 0 6px 0;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.about-nav button:hover,
+.about-nav button.active {
+    color: var(--brand-orange, #ff6b00);
+    border-bottom-color: var(--brand-orange, #ff6b00);
+}
+
+/* Ajuste do Carousel Fade do Bootstrap para fundo claro sem sobreposição */
+#sobreCarousel.carousel-fade .carousel-item {
+    min-height: 74vh;
+    padding: 20px 0 40px 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    background-color: var(--bg-main, #f8fafc);
+}
+
+/* Garante que o slide inativo não receba cliques durante o fade */
+#sobreCarousel.carousel-fade .carousel-item:not(.active) {
+    pointer-events: none;
+}
+
+/* Número grande decorativo no fundo (sem caixas) */
+.section-watermark {
+    font-size: 4.5rem;
+    font-weight: 900;
+    line-height: 1;
+    color: rgba(255, 107, 0, 0.12);
+    letter-spacing: -0.04em;
+    margin-bottom: -14px;
+    user-select: none;
+}
+
+.section-eyebrow {
+    font-size: 0.78rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--brand-orange, #ff6b00);
+    margin-bottom: 8px;
+}
+
+.section-title {
+    font-size: 2.1rem;
+    font-weight: 800;
+    color: #0f172a;
+    letter-spacing: -0.02em;
+    line-height: 1.2;
+    margin-bottom: 14px;
+}
+
+.section-lead {
+    font-size: 1.05rem;
+    color: #475569;
+    line-height: 1.65;
+    max-width: 780px;
+    margin-bottom: 34px;
+}
+
+/* Comparativo limpo em duas colunas sem bordas fechadas */
+.split-columns {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 48px;
+}
+
+@media (max-width: 768px) {
+    .split-columns {
+        grid-template-columns: 1fr;
+        gap: 28px;
+    }
+}
+
+.col-accent-line {
+    border-left: 3px solid var(--brand-orange, #ff6b00);
+    padding-left: 22px;
+}
+
+.col-muted-line {
+    border-left: 3px solid #cbd5e1;
+    padding-left: 22px;
+}
+
+.clean-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.clean-list li {
+    position: relative;
+    padding-left: 22px;
+    color: #334155;
+    font-size: 0.96rem;
+    line-height: 1.6;
+}
+
+.clean-list li + li {
+    margin-top: 12px;
+}
+
+.clean-list li::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 10px;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background-color: var(--brand-orange, #ff6b00);
+}
+
+/* Lista de recursos em formato de tópicos abertos */
+.feature-row {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 28px 44px;
+}
+
+@media (max-width: 768px) {
+    .feature-row {
+        grid-template-columns: 1fr;
+    }
+}
+
+.feature-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+}
+
+.feature-icon {
+    font-size: 1.45rem;
+    color: var(--brand-orange, #ff6b00);
+    line-height: 1;
+    margin-top: 2px;
+    flex-shrink: 0;
+}
+
+.feature-item h5 {
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: #0f172a;
+    margin: 0 0 4px 0;
+}
+
+.feature-item p {
+    font-size: 0.92rem;
+    color: #475569;
+    line-height: 1.55;
+    margin: 0;
+}
+
+/* Timeline vertical para o Mapa do Site */
+.site-timeline {
+    border-left: 2px solid #e2e8f0;
+    margin-left: 10px;
+    padding-left: 28px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.timeline-node {
+    position: relative;
+}
+
+.timeline-node::before {
+    content: "";
+    position: absolute;
+    left: -35px;
+    top: 6px;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background-color: var(--brand-orange, #ff6b00);
+    box-shadow: 0 0 0 4px #fff7ed;
+}
+
+.timeline-route {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: #0f172a;
+}
+
+.timeline-desc {
+    font-size: 0.92rem;
+    color: #475569;
+    margin: 3px 0 0 0;
+}
+
+/* Strip horizontal para Tecnologias */
+.tech-strip {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 28px;
+    padding-top: 12px;
+}
+
+@media (max-width: 992px) {
+    .tech-strip {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 576px) {
+    .tech-strip {
+        grid-template-columns: 1fr;
+    }
+}
+
+.tech-col {
+    border-top: 2px solid #0f172a;
+    padding-top: 16px;
+}
+
+.tech-col--accent {
+    border-top-color: var(--brand-orange, #ff6b00);
+}
+
+.tech-tag {
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: #64748b;
+    display: block;
+    margin-bottom: 6px;
+}
+
+.tech-col h5 {
+    font-size: 1.08rem;
+    font-weight: 800;
+    color: #0f172a;
+    margin-bottom: 8px;
+}
+
+.tech-col p {
+    font-size: 0.9rem;
+    color: #475569;
+    line-height: 1.55;
+    margin: 0;
+}
+
+/* Tabela minimalista de Banco de Dados */
+.clean-db-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.9rem;
+}
+
+.clean-db-table thead th {
+    text-align: left;
+    font-size: 0.76rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: #64748b;
+    padding: 12px 14px;
+    border-bottom: 2px solid #0f172a;
+}
+
+.clean-db-table tbody td {
+    padding: 14px;
+    border-bottom: 1px solid #e2e8f0;
+    color: #334155;
+    vertical-align: top;
+}
+
+.clean-db-table tbody tr:hover {
+    background-color: rgba(15, 23, 42, 0.02);
+}
+
+/* Controlador flutuante discreto de apresentação (canto inferior direito) */
+.presenter-dock {
+    position: fixed;
+    right: 28px;
+    bottom: 24px;
+    background-color: #0f172a;
+    color: #ffffff;
+    padding: 8px 14px;
+    border-radius: 999px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    box-shadow: 0 10px 25px rgba(15, 23, 42, 0.25);
+    z-index: 1030;
+}
+
+.presenter-dock button {
+    background: transparent;
+    border: none;
+    color: #ffffff;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.presenter-dock button:hover {
+    background-color: var(--brand-orange, #ff6b00);
+}
+
+.presenter-indicator {
+    font-size: 0.8rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    padding: 0 4px;
+    color: #e2e8f0;
+}

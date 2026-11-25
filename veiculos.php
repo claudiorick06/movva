@@ -74,7 +74,7 @@ if ($statusFiltro === 'Disponível') {
         <nav id="sidebar">
             <div>
                 <div class="sidebar-header text-center">
-                    <img src="./images/logo.png" alt="Movvi Logo" class="brand-logo-img">
+                    <img src="./images/logo.png" alt="Movva Logo" class="brand-logo-img">
                 </div>
 
                 <ul class="sidebar-menu">
@@ -272,7 +272,8 @@ if ($statusFiltro === 'Disponível') {
                                         <td class="fw-bold">#<?php echo $v['id_veiculo']; ?></td>
                                         <td>
                                             <div class="fw-semibold">
-                                                <?php echo htmlspecialchars($v['marca'] . ' ' . $v['modelo']); ?></div>
+                                                <?php echo htmlspecialchars($v['marca'] . ' ' . $v['modelo']); ?>
+                                            </div>
                                             <small class="text-secondary">Cor:
                                                 <?php echo htmlspecialchars($v['cor']); ?></small>
                                         </td>

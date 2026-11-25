@@ -1,12 +1,12 @@
 <?php
 $host = '127.0.0.1';
-$porta = '3308';
-$banco = 'locadora';
+$porta = '3306';
+$banco = 'movva';
 
 //! Mude para o usuario e senha do banco da sua maquina
 
 $usuario = 'root';
-$senha = '';
+$senha = '7742';
 
 try {
     $pdo = new PDO("mysql:host=$host;port=$porta;dbname=$banco;charset=utf8mb4", $usuario, $senha);

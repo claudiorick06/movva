@@ -323,7 +323,7 @@ $atendentes = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                 </div>
                                 <div class="col-md-6">
                                     <label class="form-label small fw-semibold text-secondary">E-mail Corporativo *</label>
-                                    <input type="email" class="form-control" name="email" placeholder="nome@movvi.com.br"
+                                    <input type="email" class="form-control" name="email" placeholder="nome@movva.com.br"
                                         required>
                                 </div>
                                 <div class="col-md-6">
