@@ -28,7 +28,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit;
     }
 
-    // 1. Verifica Cliente pelo CPF
+    //Verifica Cliente pelo CPF
     $stmtCli = $pdo->prepare("SELECT id_cliente FROM cliente WHERE cpf = :cpf LIMIT 1");
     $stmtCli->execute([':cpf' => $cpf_cliente]);
     $cliente = $stmtCli->fetch(PDO::FETCH_ASSOC);
@@ -38,7 +38,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit;
     }
 
-    // 2. Verifica Atendente pelo CPF e se está Contratado
+    //Verifica Atendente pelo CPF e se está Contratado
     $stmtAt = $pdo->prepare("SELECT id_atendente FROM atendentes WHERE cpf = :cpf AND status = 'Contratado' LIMIT 1");
     $stmtAt->execute([':cpf' => $cpf_atendente]);
     $atendente = $stmtAt->fetch(PDO::FETCH_ASSOC);
@@ -48,7 +48,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit;
     }
 
-    // 3. Verifica Veículo pelo ID e se está Disponível
+    //Verifica Veículo pelo ID e se está Disponível
     $stmtVei = $pdo->prepare("SELECT id_veiculo, valor_diaria, status FROM veiculos WHERE id_veiculo = :id LIMIT 1");
     $stmtVei->execute([':id' => $veiculo_id]);
     $veiculo = $stmtVei->fetch(PDO::FETCH_ASSOC);

@@ -116,7 +116,9 @@ if (!isset($_SESSION['id_atendente'])) {
                     <button type="button" class="nav-slide-btn" data-bs-target="#sobreCarousel" data-bs-slide-to="4">05.
                         Banco de Dados</button>
                     <button type="button" class="nav-slide-btn" data-bs-target="#sobreCarousel" data-bs-slide-to="5">06.
-                        Regras &amp; Segurança</button>
+                        Segurança &amp; Regras</button>
+                    <button type="button" class="nav-slide-btn" data-bs-target="#sobreCarousel" data-bs-slide-to="6">07.
+                        Transação &amp; Persistência</button>
                 </nav>
 
                 <!-- Bootstrap 5 Carousel com efeito Crossfade (.carousel-fade) e troca manual -->
@@ -187,7 +189,7 @@ if (!isset($_SESSION['id_atendente'])) {
                                     <div>
                                         <h5>Dashboard Gerencial</h5>
                                         <p>Resumo imediato com contagem de veículos disponíveis, locações ativas,
-                                            clientes cadastrados e faturamento total via consultas SQL.</p>
+                                            clientes cadastrados e últimas movimentações via <code>INNER JOIN</code>.</p>
                                     </div>
                                 </div>
 
@@ -233,14 +235,15 @@ if (!isset($_SESSION['id_atendente'])) {
                         <!-- SLIDE 03: ARQUITETURA E SITEFLOW -->
                         <div class="carousel-item">
                             <div class="section-watermark">03</div>
-                            <div class="section-eyebrow">Arquitetura & Navegação</div>
+                            <div class="section-eyebrow">Arquitetura &amp; Navegação</div>
                             <h2 class="section-title">Siteflow do Sistema</h2>
 
-                            <div class="text-center mt-2">
+                            <div class="siteflow-frame mt-2">
                                 <img src="images/siteflow.jpg" alt="Siteflow do Sistema Movva"
                                     class="img-fluid siteflow-img">
                             </div>
                         </div>
+
                         <!-- SLIDE 04: Tecnologias Utilizadas -->
                         <div class="carousel-item">
                             <div class="section-watermark">04</div>
@@ -263,7 +266,7 @@ if (!isset($_SESSION['id_atendente'])) {
 
                                 <div class="tech-col">
                                     <span class="tech-tag">Banco de Dados</span>
-                                    <h5>MySQL / MariaDB</h5>
+                                    <h5>MySQL</h5>
                                     <p>Modelagem relacional sob engine <strong>InnoDB</strong> com charset
                                         <code>utf8mb4</code>, chaves primárias, índices únicos e chaves estrangeiras.
                                     </p>
@@ -356,45 +359,45 @@ if (!isset($_SESSION['id_atendente'])) {
                             </div>
                         </div>
 
-                        <!-- SLIDE 06: Regras de Negócio e Informações Relevantes -->
+                        <!-- SLIDE 06: Segurança e Regras de Negócio -->
+                        <!-- SLIDE 06: Segurança e Regras de Negócio -->
                         <div class="carousel-item">
                             <div class="section-watermark">06</div>
-                            <span class="section-eyebrow">Regras</span>
-                            <h2 class="section-title">Regras de Negócio e Segurança</h2>
+                            <span class="section-eyebrow">Segurança &amp; Regras</span>
+                            <h2 class="section-title">Verificações, Segurança e Ciclo de Vida</h2>
                             <p class="section-lead">
-                                Controles aplicados no back-end e no banco de dados para evitar inconsistências durante
-                                o uso contínuo da aplicação.
+                                Controles aplicados no back-end e no banco de dados para evitar acessos indevidos e
+                                inconsistências durante o uso contínuo da aplicação.
                             </p>
 
                             <div class="feature-row">
                                 <div class="feature-item">
-                                    <i class="bi bi-key feature-icon"></i>
+                                    <i class="bi bi-lock feature-icon"></i>
                                     <div>
-                                        <h5>Trava Automática de Setup</h5>
-                                        <p>A rota <code>primeiro_acesso.php</code> consulta <code>COUNT(*)</code> na
-                                            tabela <code>atendentes</code> e bloqueia permanentemente o cadastro público
-                                            após a criação do primeiro gerente.</p>
+                                        <h5>Controle de Sessão &amp; Criptografia</h5>
+                                        <p>Todas as rotas verificam <code>$_SESSION['id_atendente']</code> no início da
+                                            execução. Senhas são gravadas com <code>password_hash()</code> e
+                                            validadas via <code>password_verify()</code>.</p>
                                     </div>
                                 </div>
 
                                 <div class="feature-item">
-                                    <i class="bi bi-shield-check feature-icon"></i>
+                                    <i class="bi bi-key feature-icon"></i>
                                     <div>
-                                        <h5>Bloqueio de Exclusão com Vínculo</h5>
-                                        <p>Clientes, veículos ou colaboradores associados a contratos existentes na
-                                            tabela <code>locacoes</code> não podem ser removidos, preservando o
-                                            histórico operacional.</p>
+                                        <h5>Trava de Setup &amp; Validação Dupla</h5>
+                                        <p><code>primeiro_acesso.php</code> bloqueia o cadastro público após a criação
+                                            do primeiro gerente. Datas e valor total das diárias são recalculados no
+                                            servidor PHP.</p>
                                     </div>
                                 </div>
 
                                 <div class="feature-item">
                                     <i class="bi bi-arrow-repeat feature-icon"></i>
                                     <div>
-                                        <h5>Sincronização Automática da Frota</h5>
-                                        <p>Somente carros <em>Disponíveis</em> são listados em novas locações. Ao
-                                            confirmar o contrato passam a <em>Alugado</em> e na devolução voltam a
-                                            <em>Disponível</em>.
-                                        </p>
+                                        <h5>Sincronização &amp; Bloqueio de Vínculo</h5>
+                                        <p>Registros vinculados a contratos não podem ser excluídos. Ao finalizar ou
+                                            cancelar em <code>locacao_status.php</code>, o veículo retorna
+                                            automaticamente a <em>Disponível</em>.</p>
                                     </div>
                                 </div>
 
@@ -402,11 +405,64 @@ if (!isset($_SESSION['id_atendente'])) {
                                     <i class="bi bi-funnel feature-icon"></i>
                                     <div>
                                         <h5>Sanitização de Dados Críticos</h5>
-                                        <p>CPFs e telefones são limpos para armazenar
-                                            apenas dígitos numéricos, eliminando duplicidades por máscara de digitação.
-                                        </p>
+                                        <p>CPFs e telefones são limpos para armazenar apenas dígitos numéricos,
+                                            eliminando duplicidades por máscara de digitação.</p>
                                     </div>
                                 </div>
+                            </div>
+                        </div>  
+
+                        <!-- SLIDE 07: Persistência e Transação ACID -->
+                        <div class="carousel-item">
+                            <div class="section-watermark">07</div>
+                            <span class="section-eyebrow">Persistência de Dados</span>
+                            <h2 class="section-title"><code>locacao_salvar.php</code> vs. Demais Salvamentos</h2>
+                            <p class="section-lead">
+                                Diferença arquitetural entre cadastros simples de entidade única e o fechamento
+                                transacional de um contrato de locação.
+                            </p>
+
+                            <div class="table-responsive">
+                                <table class="clean-db-table">
+                                    <thead>
+                                        <tr>
+                                            <th style="width: 26%;">Arquivo(s)</th>
+                                            <th style="width: 22%;">Escopo no Banco</th>
+                                            <th>Comportamento Técnico e Integridade</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td class="fw-bold font-monospace">
+                                                cliente_salvar.php<br>
+                                                veiculo_salvar.php<br>
+                                                atendente_salvar.php
+                                            </td>
+                                            <td><strong>Entidade Única</strong><br><span class="text-secondary">1
+                                                    tabela por operação</span></td>
+                                            <td>Executam operações isoladas de <code>INSERT</code> ou
+                                                <code>UPDATE</code> sobre uma única tabela. Como não alteram estados
+                                                dependentes em outras entidades, cada requisição já é atômica por
+                                                natureza.
+                                            </td>
+                                        </tr>
+                                        <tr style="background-color: rgba(255, 107, 0, 0.06);">
+                                            <td class="fw-bold font-monospace" style="color: var(--brand-orange, #ff6b00);">
+                                                locacao_salvar.php
+                                            </td>
+                                            <td><strong>Multi-Tabela</strong><br><span
+                                                    class="text-secondary"><code>locacoes</code> +
+                                                    <code>veiculos</code></span></td>
+                                            <td>Exige duas gravações interdependentes: insere o contrato em
+                                                <code>locacoes</code> e altera o status do veículo para
+                                                <code>Alugado</code> em <code>veiculos</code>. Utiliza <strong>transação
+                                                    ACID no PDO</strong> (<code>beginTransaction()</code>,
+                                                <code>commit()</code> e <code>rollBack()</code>) para impedir que um
+                                                veículo fique disponível com contrato ativo em caso de falha parcial.
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
                             </div>
                         </div>
 
@@ -422,7 +478,7 @@ if (!isset($_SESSION['id_atendente'])) {
         <button type="button" data-bs-target="#sobreCarousel" data-bs-slide="prev" title="Slide anterior">
             <i class="bi bi-chevron-left"></i>
         </button>
-        <span class="presenter-indicator" id="secIndicator">01 / 06</span>
+        <span class="presenter-indicator" id="secIndicator">01 / 07</span>
         <button type="button" data-bs-target="#sobreCarousel" data-bs-slide="next" title="Próximo slide">
             <i class="bi bi-chevron-right"></i>
         </button>
@@ -445,6 +501,12 @@ if (!isset($_SESSION['id_atendente'])) {
             navBtns.forEach((btn, idx) => {
                 btn.classList.toggle('active', idx === proximoIndice);
             });
+        });
+
+        document.addEventListener('keydown', function (e) {
+            const carousel = bootstrap.Carousel.getOrCreateInstance(carouselEl);
+            if (e.key === 'ArrowRight') carousel.next();
+            if (e.key === 'ArrowLeft') carousel.prev();
         });
     </script>
 </body>

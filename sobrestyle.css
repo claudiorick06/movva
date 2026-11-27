@@ -1,14 +1,9 @@
-/* =========================================================
-   SOBRE O SISTEMA - EDITORIAL COM CROSSFADE BOOTSTRAP
-   ========================================================= */
-
 .about-page {
     max-width: 1040px;
     margin: 0 auto;
     padding-bottom: 70px;
 }
 
-/* Índice superior (sincronizado com o slide ativo) */
 .about-nav {
     display: flex;
     flex-wrap: wrap;
@@ -37,7 +32,6 @@
     border-bottom-color: var(--brand-orange, #ff6b00);
 }
 
-/* Ajuste do Carousel Fade do Bootstrap para fundo claro sem sobreposição */
 #sobreCarousel.carousel-fade .carousel-item {
     min-height: 74vh;
     padding: 20px 0 40px 0;
@@ -47,12 +41,10 @@
     background-color: var(--bg-main, #f8fafc);
 }
 
-/* Garante que o slide inativo não receba cliques durante o fade */
 #sobreCarousel.carousel-fade .carousel-item:not(.active) {
     pointer-events: none;
 }
 
-/* Número grande decorativo no fundo (sem caixas) */
 .section-watermark {
     font-size: 4.5rem;
     font-weight: 900;
@@ -89,7 +81,6 @@
     margin-bottom: 34px;
 }
 
-/* Comparativo limpo em duas colunas sem bordas fechadas */
 .split-columns {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -142,7 +133,6 @@
     background-color: var(--brand-orange, #ff6b00);
 }
 
-/* Lista de recursos em formato de tópicos abertos */
 .feature-row {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
@@ -183,46 +173,6 @@
     margin: 0;
 }
 
-/* Timeline vertical para o Mapa do Site */
-.site-timeline {
-    border-left: 2px solid #e2e8f0;
-    margin-left: 10px;
-    padding-left: 28px;
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-}
-
-.timeline-node {
-    position: relative;
-}
-
-.timeline-node::before {
-    content: "";
-    position: absolute;
-    left: -35px;
-    top: 6px;
-    width: 12px;
-    height: 12px;
-    border-radius: 50%;
-    background-color: var(--brand-orange, #ff6b00);
-    box-shadow: 0 0 0 4px #fff7ed;
-}
-
-.timeline-route {
-    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-    font-size: 0.9rem;
-    font-weight: 700;
-    color: #0f172a;
-}
-
-.timeline-desc {
-    font-size: 0.92rem;
-    color: #475569;
-    margin: 3px 0 0 0;
-}
-
-/* Strip horizontal para Tecnologias */
 .tech-strip {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
@@ -275,7 +225,6 @@
     margin: 0;
 }
 
-/* Tabela minimalista de Banco de Dados */
 .clean-db-table {
     width: 100%;
     border-collapse: collapse;
@@ -304,7 +253,6 @@
     background-color: rgba(15, 23, 42, 0.02);
 }
 
-/* Controlador flutuante discreto de apresentação (canto inferior direito) */
 .presenter-dock {
     position: fixed;
     right: 28px;
